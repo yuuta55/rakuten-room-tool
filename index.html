@@ -4,247 +4,622 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>楽天ROOM投稿支援ツール</title>
-    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
     <style>
         body {
             font-family: 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Yu Gothic', 'Meiryo', sans-serif;
+            background: linear-gradient(135deg, #fdf2f8 0%, #f3e8ff 100%);
+            min-height: 100vh;
+            color: #374151;
+            margin: 0;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+        
+        .header h1 {
+            font-size: 28px;
+            font-weight: bold;
+            color: #1f2937;
+            margin-bottom: 8px;
+        }
+        
+        .header p {
+            color: #6b7280;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+        
+        .card h2 {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+        
+        .input-group {
+            margin-bottom: 16px;
+        }
+        
+        .label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 8px;
+        }
+        
+        .input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+        
+        .input:focus {
+            outline: none;
+            border-color: #ec4899;
+            box-shadow: 0 0 0 3px rgba(236, 72, 153, 0.1);
+        }
+        
+        .button {
+            background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-right: 10px;
+        }
+        
+        .button:hover {
+            box-shadow: 0 4px 12px rgba(236, 72, 153, 0.3);
+        }
+        
+        .button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .button-success {
+            background: linear-gradient(135deg, #10b981 0%, #3b82f6 100%);
+        }
+        
+        .button-warning {
+            background: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%);
+        }
+        
+        .flex {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .grid {
+            display: grid;
+            gap: 24px;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        }
+        
+        .product-item {
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 20px;
+            background: #f9fafb;
+        }
+        
+        .product-info {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+        
+        .product-image {
+            width: 80px;
+            height: 80px;
+            border-radius: 8px;
+            object-fit: cover;
+        }
+        
+        .product-details h3 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .price {
+            font-size: 20px;
+            font-weight: bold;
+            color: #ec4899;
+            margin-bottom: 8px;
+        }
+        
+        .rating {
+            font-size: 14px;
+            color: #6b7280;
+        }
+        
+        .review-preview {
+            background: #f3f4f6;
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 16px;
+        }
+        
+        .review-text {
+            background: white;
+            border-left: 4px solid #ec4899;
+            padding: 12px;
+            margin: 12px 0;
+            white-space: pre-line;
+            max-height: 200px;
+            overflow-y: auto;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        
+        .genre-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+        
+        .genre-button {
+            background: #f3f4f6;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .genre-button.active {
+            background: #ec4899;
+            color: white;
+        }
+        
+        .genre-button:hover {
+            background: #e5e7eb;
+        }
+        
+        .genre-button.active:hover {
+            background: #db2777;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .alert {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin: 16px 0;
+            font-size: 14px;
+        }
+        
+        .alert-success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #a7f3d0;
+        }
+        
+        .alert-info {
+            background: #dbeafe;
+            color: #1e40af;
+            border: 1px solid #93c5fd;
+        }
+        
+        .alert-warning {
+            background: #fef3c7;
+            color: #92400e;
+            border: 1px solid #fcd34d;
+        }
+        
+        .text-small {
+            font-size: 12px;
+            color: #6b7280;
+        }
+        
+        .text-center {
+            text-align: center;
+        }
+        
+        .loading {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid #ffffff40;
+            border-top: 2px solid #ffffff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .api-status {
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .api-connected {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        
+        .api-disconnected {
+            background: #fee2e2;
+            color: #991b1b;
         }
     </style>
 </head>
 <body>
-    <div id="root"></div>
+    <div class="container">
+        <header class="header">
+            <h1>🛍️ 楽天ROOM投稿支援ツール</h1>
+            <p>楽天APIを使用して商品をリサーチ＆投稿文を自動生成</p>
+        </header>
 
-    <script type="text/babel">
-        const { useState, useEffect } = React;
-        const { Search, Star, TrendingUp, Copy, Check, RefreshCw } = lucide;
+        <!-- API設定 -->
+        <div class="card">
+            <h2>🔑 楽天API設定</h2>
+            <p class="text-small" style="margin-bottom: 16px;">
+                楽天アフィリエイトAPIの無料枠（月1000リクエスト）を使用します。<br>
+                <a href="https://webservice.rakuten.co.jp/" target="_blank" style="color: #3b82f6;">こちら</a>でアプリIDを取得してください。
+            </p>
+            
+            <div class="flex">
+                <div style="flex: 1;">
+                    <input type="text" id="appId" class="input" placeholder="楽天アプリID（ApplicationID）を入力">
+                </div>
+                <button class="button" onclick="testApiConnection()">接続テスト</button>
+                <div id="apiStatus" class="api-status api-disconnected">未接続</div>
+            </div>
+            
+            <div class="alert alert-info" style="margin-top: 16px;">
+                <strong>APIキー取得手順：</strong><br>
+                1. <a href="https://webservice.rakuten.co.jp/" target="_blank">楽天ウェブサービス</a>にアクセス<br>
+                2. 「新規アプリ作成」でアプリ登録<br>
+                3. アプリ名：楽天ROOM投稿支援ツール<br>
+                4. アプリURL：このHTMLファイルの場所<br>
+                5. 発行されたApplicationIDをコピーして上記に入力
+            </div>
+        </div>
 
-        const RakutenRoomResearchTool = () => {
-            const [selectedGenre, setSelectedGenre] = useState('');
-            const [products, setProducts] = useState([]);
-            const [loading, setLoading] = useState(false);
-            const [copiedId, setCopiedId] = useState(null);
-            const [urlInput, setUrlInput] = useState('');
-            const [showManualForm, setShowManualForm] = useState(false);
-            const [manualProduct, setManualProduct] = useState({
-                name: '',
-                price: '',
-                rating: '',
-                reviewCount: '',
-                features: ['', '', ''],
-                imageUrl: ''
-            });
+        <!-- 商品検索 -->
+        <div class="card">
+            <h2>🔍 商品検索</h2>
+            
+            <div class="input-group">
+                <label class="label">キーワード検索</label>
+                <div class="flex">
+                    <input type="text" id="searchKeyword" class="input" placeholder="検索したいキーワードを入力（例：ファンデーション、スニーカー）" style="flex: 1;">
+                    <button class="button" onclick="searchProducts()" id="searchBtn">検索</button>
+                </div>
+            </div>
+            
+            <div class="input-group">
+                <label class="label">ジャンル指定（任意）</label>
+                <select id="genreSelect" class="input">
+                    <option value="">すべてのジャンル</option>
+                    <option value="100026">ファッション</option>
+                    <option value="101070">コスメ・美容</option>
+                    <option value="100804">インテリア・家具</option>
+                    <option value="101205">キッチン用品</option>
+                    <option value="100433">スマホ・家電</option>
+                    <option value="101161">スポーツ・アウトドア</option>
+                    <option value="100371">本・雑誌</option>
+                    <option value="101213">グルメ・食品</option>
+                    <option value="101164">ペット用品</option>
+                </select>
+            </div>
+            
+            <div class="input-group">
+                <label class="label">並び順</label>
+                <select id="sortSelect" class="input">
+                    <option value="standard">楽天標準</option>
+                    <option value="+reviewCount">レビュー件数順</option>
+                    <option value="+reviewAverage">レビュー評価順</option>
+                    <option value="+itemPrice">価格安い順</option>
+                    <option value="-itemPrice">価格高い順</option>
+                </select>
+            </div>
+        </div>
 
-            // 楽天のジャンル一覧（主要なもの）
-            const genres = [
-                { id: '100026', name: 'ファッション' },
-                { id: '101070', name: 'コスメ・美容' },
-                { id: '100804', name: 'インテリア・家具' },
-                { id: '101205', name: 'キッチン用品' },
-                { id: '100433', name: 'スマホ・家電' },
-                { id: '101161', name: 'スポーツ・アウトドア' },
-                { id: '100371', name: '本・雑誌' },
-                { id: '101213', name: 'グルメ・食品' },
-                { id: '101164', name: 'ペット用品' },
-                { id: '101070', name: 'ヘルス・ダイエット' }
-            ];
+        <!-- API使用状況 -->
+        <div id="apiUsage" class="card hidden">
+            <h2>📊 API使用状況</h2>
+            <div class="flex">
+                <div>今月の使用回数: <strong id="usageCount">0</strong> / 1000</div>
+                <div>残り回数: <strong id="remainingCount">1000</strong></div>
+            </div>
+            <div class="text-small" style="margin-top: 8px;">
+                無料枠の制限に近づいたらアラートが表示されます
+            </div>
+        </div>
 
-            // 成功投稿者の分析データ（実際の分析結果をベースにしたパターン）
-            const successPatterns = {
-                hooks: [
-                    '🔥話題沸騰中！',
-                    '✨これ知ってる？',
-                    '💗一目惚れしました',
-                    '🎉ついに見つけた！',
-                    '😍これ絶対欲しい',
-                    '🌟売り切れ前に要チェック',
-                    '💯満足度高すぎる',
-                    '🚨在庫わずか！'
-                ],
-                emotions: [
-                    'すっごく気に入ってます💕',
-                    'もう手放せません😍',
-                    '買って正解でした✨',
-                    'コスパ最強すぎる🔥',
-                    'クオリティに感動💎',
-                    'リピ確定です💗',
-                    '友達にも教えたい🌸'
-                ],
-                callToActions: [
-                    'タップして詳細チェック👆',
-                    'プロフィールからも見れます💫',
-                    'コメントで質問もお気軽に💌',
-                    'ストーリーでも紹介中📱',
-                    '他のおすすめも要チェック👀',
-                    'いいねで保存お願いします💝'
-                ],
-                hashtags: {
-                    'ファッション': ['#ootd', '#プチプラ', '#着回し', '#大人可愛い', '#トレンド'],
-                    'コスメ・美容': ['#美容好きさんと繋がりたい', '#スキンケア', '#メイク', '#美肌', '#愛用品'],
-                    'インテリア・家具': ['#マイホーム', '#暮らし', '#インテリア好き', '#おうち時間', '#北欧'],
-                    'キッチン用品': ['#料理好き', '#時短', '#便利グッズ', '#キッチン', '#おうちごはん'],
-                    'default': ['#楽天お買い物マラソン', '#ポイント倍増', '#お得情報']
-                }
-            };
+        <!-- 検索結果 -->
+        <div id="results" class="hidden">
+            <div class="card">
+                <h2>検索結果 (<span id="resultCount">0</span>件)</h2>
+                <div id="productsList"></div>
+            </div>
+        </div>
 
-            // 楽天商品URL解析機能
-            const parseRakutenUrl = (url) => {
-                try {
-                    const urlObj = new URL(url);
-                    
-                    // 楽天市場のドメインチェック
-                    if (!urlObj.hostname.includes('rakuten.co.jp')) {
-                        throw new Error('楽天市場のURLではありません');
-                    }
-                    
-                    let productId = '';
-                    let shopId = '';
-                    let productName = '';
-                    
-                    // URLパターン解析
-                    if (url.includes('/item/')) {
-                        // 通常の商品ページURL: https://item.rakuten.co.jp/shop/itemcode/
-                        const pathParts = urlObj.pathname.split('/');
-                        if (pathParts.length >= 3) {
-                            shopId = pathParts[1];
-                            productId = pathParts[2];
-                        }
-                    } else if (url.includes('product.rakuten.co.jp')) {
-                        // 商品検索結果URL: https://product.rakuten.co.jp/product/productid/
-                        const pathParts = urlObj.pathname.split('/');
-                        productId = pathParts[pathParts.length - 2] || pathParts[pathParts.length - 1];
-                    }
-                    
-                    // URLから商品名を推測（限定的）
-                    const titleMatch = url.match(/[?&]title=([^&]*)/);
-                    if (titleMatch) {
-                        productName = decodeURIComponent(titleMatch[1]);
-                    }
-                    
-                    return {
-                        success: true,
-                        productId,
-                        shopId,
-                        productName,
-                        originalUrl: url
-                    };
-                } catch (error) {
-                    return {
-                        success: false,
-                        error: error.message
-                    };
-                }
-            };
-
-            // URL解析実行
-            const analyzeUrl = () => {
-                if (!urlInput.trim()) return;
+        <!-- 使い方説明 -->
+        <div class="card" style="background: #eff6ff;">
+            <h2 style="color: #1e40af;">💡 使い方</h2>
+            
+            <div class="grid">
+                <div>
+                    <h4 style="color: #1d4ed8; margin-bottom: 8px;">🔑 API設定</h4>
+                    <ol style="font-size: 14px; color: #1e40af; line-height: 1.6;">
+                        <li>楽天ウェブサービスでアプリ登録</li>
+                        <li>ApplicationIDを取得</li>
+                        <li>上記のAPI設定欄に入力</li>
+                        <li>「接続テスト」で動作確認</li>
+                    </ol>
+                </div>
                 
-                const result = parseRakutenUrl(urlInput.trim());
+                <div>
+                    <h4 style="color: #1d4ed8; margin-bottom: 8px;">🔍 商品検索・投稿作成</h4>
+                    <ol style="font-size: 14px; color: #1e40af; line-height: 1.6;">
+                        <li>キーワードを入力して検索</li>
+                        <li>気になる商品を確認</li>
+                        <li>自動生成された投稿文をプレビュー</li>
+                        <li>「投稿文をコピー」でクリップボードにコピー</li>
+                        <li>楽天ROOMに貼り付けて投稿</li>
+                    </ol>
+                </div>
+            </div>
+            
+            <div class="alert alert-warning" style="margin-top: 16px;">
+                <strong>重要：</strong> 楽天APIは無料枠で月1000リクエストまで利用可能です。使い過ぎにご注意ください。商用利用や大量リクエストには有料プランが必要です。
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let apiKey = '';
+        let usageCount = 0;
+        let products = [];
+
+        // 成功投稿者の分析データ
+        const successPatterns = {
+            hooks: [
+                '🔥話題沸騰中！',
+                '✨これ知ってる？',
+                '💗一目惚れしました',
+                '🎉ついに見つけた！',
+                '😍これ絶対欲しい',
+                '🌟売り切れ前に要チェック',
+                '💯満足度高すぎる',
+                '🚨在庫わずか！'
+            ],
+            emotions: [
+                'すっごく気に入ってます💕',
+                'もう手放せません😍',
+                '買って正解でした✨',
+                'コスパ最強すぎる🔥',
+                'クオリティに感動💎',
+                'リピ確定です💗',
+                '友達にも教えたい🌸'
+            ],
+            callToActions: [
+                'タップして詳細チェック👆',
+                'プロフィールからも見れます💫',
+                'コメントで質問もお気軽に💌',
+                'ストーリーでも紹介中📱',
+                '他のおすすめも要チェック👀',
+                'いいねで保存お願いします💝'
+            ],
+            hashtags: {
+                'ファッション': ['#ootd', '#プチプラ', '#着回し', '#大人可愛い', '#トレンド'],
+                'コスメ・美容': ['#美容好きさんと繋がりたい', '#スキンケア', '#メイク', '#美肌', '#愛用品'],
+                'インテリア・家具': ['#マイホーム', '#暮らし', '#インテリア好き', '#おうち時間', '#北欧'],
+                'キッチン用品': ['#料理好き', '#時短', '#便利グッズ', '#キッチン', '#おうちごはん'],
+                'default': ['#楽天お買い物マラソン', '#ポイント倍増', '#お得情報']
+            }
+        };
+
+        // API接続テスト
+        async function testApiConnection() {
+            apiKey = document.getElementById('appId').value.trim();
+            
+            if (!apiKey) {
+                alert('ApplicationIDを入力してください');
+                return;
+            }
+            
+            const statusElement = document.getElementById('apiStatus');
+            statusElement.textContent = 'テスト中...';
+            statusElement.className = 'api-status api-disconnected';
+            
+            try {
+                // 楽天商品検索APIのテスト呼び出し
+                const testUrl = `https://app.rakuten.co.jp/services/api/IchibaItem/Search/20170706?format=json&keyword=テスト&applicationId=${apiKey}`;
                 
-                if (result.success) {
-                    setManualProduct({
-                        name: result.productName || '商品名を入力してください',
-                        price: '',
-                        rating: '4.5',
-                        reviewCount: '',
-                        features: ['', '', ''],
-                        imageUrl: '',
-                        productId: result.productId,
-                        shopId: result.shopId,
-                        originalUrl: result.originalUrl
-                    });
-                    setShowManualForm(true);
-                    setUrlInput('');
+                const response = await fetch(testUrl);
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    
+                    if (data.Items && data.Items.length > 0) {
+                        statusElement.textContent = '接続成功';
+                        statusElement.className = 'api-status api-connected';
+                        document.getElementById('apiUsage').classList.remove('hidden');
+                        updateUsageCount();
+                        
+                        // APIキーをローカル保存
+                        localStorage.setItem('rakuten_api_key', apiKey);
+                        
+                        alert('API接続が成功しました！商品検索が利用できます。');
+                    } else {
+                        throw new Error('APIレスポンスが無効です');
+                    }
                 } else {
-                    alert(`URL解析エラー: ${result.error}`);
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
                 }
-            };
+            } catch (error) {
+                console.error('API接続エラー:', error);
+                statusElement.textContent = '接続失敗';
+                statusElement.className = 'api-status api-disconnected';
+                alert(`API接続に失敗しました: ${error.message}\n\nApplicationIDを確認してください。`);
+            }
+        }
 
-            // 手動商品追加
-            const addManualProduct = () => {
-                if (!manualProduct.name || !manualProduct.price) {
-                    alert('商品名と価格は必須です');
-                    return;
+        // 商品検索
+        async function searchProducts() {
+            if (!apiKey) {
+                alert('まずAPI設定で接続テストを行ってください');
+                return;
+            }
+            
+            const keyword = document.getElementById('searchKeyword').value.trim();
+            if (!keyword) {
+                alert('検索キーワードを入力してください');
+                return;
+            }
+            
+            const genre = document.getElementById('genreSelect').value;
+            const sort = document.getElementById('sortSelect').value;
+            
+            const searchBtn = document.getElementById('searchBtn');
+            const originalText = searchBtn.textContent;
+            searchBtn.textContent = '検索中...';
+            searchBtn.disabled = true;
+            
+            try {
+                // 楽天商品検索API呼び出し
+                let url = `https://app.rakuten.co.jp/services/api/IchibaItem/Search/20170706?format=json&keyword=${encodeURIComponent(keyword)}&applicationId=${apiKey}&hits=20`;
+                
+                if (genre) {
+                    url += `&genreId=${genre}`;
                 }
                 
-                const newProduct = {
-                    id: Date.now(),
-                    name: manualProduct.name,
-                    price: parseInt(manualProduct.price.replace(/[^0-9]/g, '')),
-                    rating: parseFloat(manualProduct.rating) || 4.5,
-                    reviewCount: parseInt(manualProduct.reviewCount) || 100,
-                    imageUrl: manualProduct.imageUrl || 'https://via.placeholder.com/150x150?text=商品画像',
-                    features: manualProduct.features.filter(f => f.trim() !== ''),
-                    salesRank: products.length + 1,
-                    isManual: true,
-                    productId: manualProduct.productId,
-                    originalUrl: manualProduct.originalUrl
-                };
+                if (sort) {
+                    url += `&sort=${sort}`;
+                }
                 
-                setProducts([...products, newProduct]);
-                setManualProduct({
-                    name: '',
-                    price: '',
-                    rating: '',
-                    reviewCount: '',
-                    features: ['', '', ''],
-                    imageUrl: ''
-                });
-                setShowManualForm(false);
-            };
+                const response = await fetch(url);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                
+                if (data.Items && data.Items.length > 0) {
+                    products = data.Items.map(item => ({
+                        id: item.Item.itemCode,
+                        name: item.Item.itemName,
+                        price: item.Item.itemPrice,
+                        imageUrl: item.Item.mediumImageUrls?.[0]?.imageUrl || item.Item.smallImageUrls?.[0]?.imageUrl || 'https://via.placeholder.com/150x150?text=No+Image',
+                        url: item.Item.itemUrl,
+                        shopName: item.Item.shopName,
+                        reviewCount: item.Item.reviewCount || 0,
+                        reviewAverage: item.Item.reviewAverage || 0,
+                        features: extractFeatures(item.Item.itemName, item.Item.catchcopy)
+                    }));
+                    
+                    renderProducts();
+                    updateUsageCount();
+                } else {
+                    alert('検索結果が見つかりませんでした。キーワードを変更してお試しください。');
+                }
+                
+            } catch (error) {
+                console.error('検索エラー:', error);
+                alert(`検索に失敗しました: ${error.message}`);
+            } finally {
+                searchBtn.textContent = originalText;
+                searchBtn.disabled = false;
+            }
+        }
 
-            // サンプル商品データ（実際の楽天API連携時は置き換え）
-            const generateSampleProducts = (genreName) => {
-                const sampleProducts = [
-                    {
-                        id: 1,
-                        name: `${genreName}の人気商品 A`,
-                        price: 2980,
-                        rating: 4.8,
-                        reviewCount: 1250,
-                        imageUrl: 'https://via.placeholder.com/150x150?text=Product+A',
-                        features: ['高品質素材', '口コミ評価高', 'コスパ良好'],
-                        salesRank: 1
-                    },
-                    {
-                        id: 2,
-                        name: `${genreName}のトレンド商品 B`,
-                        price: 4500,
-                        rating: 4.6,
-                        reviewCount: 890,
-                        imageUrl: 'https://via.placeholder.com/150x150?text=Product+B',
-                        features: ['新商品', 'SNSで話題', 'Limited Edition'],
-                        salesRank: 3
-                    },
-                    {
-                        id: 3,
-                        name: `${genreName}のベストセラー C`,
-                        price: 1890,
-                        rating: 4.9,
-                        reviewCount: 2100,
-                        imageUrl: 'https://via.placeholder.com/150x150?text=Product+C',
-                        features: ['ロングセラー', '信頼の品質', 'リピート率高'],
-                        salesRank: 2
-                    }
-                ];
-                return sampleProducts;
-            };
+        // 商品名とキャッチコピーから特徴を抽出
+        function extractFeatures(itemName, catchcopy) {
+            const features = [];
+            const text = (itemName + ' ' + (catchcopy || '')).toLowerCase();
+            
+            // よくある特徴を抽出
+            const featurePatterns = [
+                { pattern: /(送料無料|送料込)/, feature: '送料無料' },
+                { pattern: /(高品質|高級|premium)/, feature: '高品質' },
+                { pattern: /(人気|ランキング|bestseller)/, feature: '人気商品' },
+                { pattern: /(新商品|new|最新)/, feature: '新商品' },
+                { pattern: /(限定|限界|special)/, feature: '限定商品' },
+                { pattern: /(お得|安い|格安)/, feature: 'お得価格' },
+                { pattern: /(おしゃれ|可愛い|かわいい)/, feature: 'おしゃれ' }
+            ];
+            
+            featurePatterns.forEach(({pattern, feature}) => {
+                if (pattern.test(text) && features.length < 3) {
+                    features.push(feature);
+                }
+            });
+            
+            // 不足分を補完
+            while (features.length < 3) {
+                const defaultFeatures = ['高評価', 'おすすめ', '人気'];
+                const remaining = defaultFeatures.filter(f => !features.includes(f));
+                if (remaining.length > 0) {
+                    features.push(remaining[0]);
+                } else {
+                    break;
+                }
+            }
+            
+            return features;
+        }
 
-            // レビュー文生成（成功パターンを反映）
-            const generateReview = (product, genreName) => {
-                const hook = successPatterns.hooks[Math.floor(Math.random() * successPatterns.hooks.length)];
-                const emotion = successPatterns.emotions[Math.floor(Math.random() * successPatterns.emotions.length)];
-                const cta = successPatterns.callToActions[Math.floor(Math.random() * successPatterns.callToActions.length)];
-                const specificHashtags = successPatterns.hashtags[genreName] || successPatterns.hashtags.default;
-                const hashtags = [...specificHashtags.slice(0, 3), '#楽天ROOM', `#${genreName}`];
+        // 投稿文生成
+        function generateReview(product) {
+            const hook = successPatterns.hooks[Math.floor(Math.random() * successPatterns.hooks.length)];
+            const emotion = successPatterns.emotions[Math.floor(Math.random() * successPatterns.emotions.length)];
+            const cta = successPatterns.callToActions[Math.floor(Math.random() * successPatterns.callToActions.length)];
+            
+            // ジャンルを商品名から推測
+            let genre = 'default';
+            const itemName = product.name.toLowerCase();
+            if (itemName.includes('ファッション') || itemName.includes('服') || itemName.includes('シャツ')) {
+                genre = 'ファッション';
+            } else if (itemName.includes('コスメ') || itemName.includes('化粧') || itemName.includes('美容')) {
+                genre = 'コスメ・美容';
+            } else if (itemName.includes('インテリア') || itemName.includes('家具')) {
+                genre = 'インテリア・家具';
+            } else if (itemName.includes('キッチン') || itemName.includes('料理')) {
+                genre = 'キッチン用品';
+            }
+            
+            const specificHashtags = successPatterns.hashtags[genre] || successPatterns.hashtags.default;
+            const hashtags = [...specificHashtags.slice(0, 3), '#楽天ROOM', '#楽天お買い物マラソン'];
 
-                const templates = [
-                    // 感情型（売れ筋パターン1）
-                    `${hook}
+            const templates = [
+                `${hook}
 
 ${product.name}
 
@@ -254,516 +629,137 @@ ${emotion}
 ${product.features.map(f => `▶︎ ${f}`).join('\n')}
 
 💰¥${product.price.toLocaleString()}
-⭐${product.rating}/5.0（${product.reviewCount}件）
+⭐${product.reviewAverage}/5.0（${product.reviewCount}件）
 
 ${cta}
 
 ${hashtags.join(' ')}`,
 
-                    // 体験談型（売れ筋パターン2）
-                    `${product.name}をGET💕
+                `${product.name}をGET💕
 
 使ってみた感想👇
 ${product.features.map(f => `✅ ${f}`).join('\n')}
 
 この価格でこのクオリティは本当にお得🥺
-レビューも${product.reviewCount}件で${product.rating}⭐と高評価！
+レビューも${product.reviewCount}件で${product.reviewAverage}⭐と高評価！
 
 ¥${product.price.toLocaleString()}
 
 ${emotion}
 
-${cta}
-
-${hashtags.join(' ')}`,
-
-                    // 緊急性型（売れ筋パターン3）
-                    `${hook}
-
-📢${product.name}
-
-人気で売り切れ続出だったこちら、
-やっと買えました😭💕
-
-【推しポイント】
-${product.features.map((f, i) => `${i + 1}️⃣ ${f}`).join('\n')}
-
-¥${product.price.toLocaleString()}
-⭐${product.rating} (${product.reviewCount}件の高評価)
-
-${emotion}
-
-気になる方はお早めに🏃‍♀️
-
-${hashtags.join(' ')}`,
-
-                    // 比較・解説型（売れ筋パターン4）
-                    `${genreName}で迷ってる方必見👀
-
-${product.name}
-
-他と比較してここが良い👇
-${product.features.map(f => `🔸 ${f}`).join('\n')}
-
-💰価格：¥${product.price.toLocaleString()}
-📊評価：${product.rating}/5 (${product.reviewCount}件)
-
-${emotion}
-
-詳細は商品ページで📱
 ${cta}
 
 ${hashtags.join(' ')}`
-                ];
+            ];
+            
+            return templates[Math.floor(Math.random() * templates.length)];
+        }
+
+        // 商品一覧表示
+        function renderProducts() {
+            if (products.length === 0) return;
+            
+            document.getElementById('results').classList.remove('hidden');
+            document.getElementById('resultCount').textContent = products.length;
+            
+            const productsList = document.getElementById('productsList');
+            productsList.innerHTML = '';
+            
+            products.forEach(product => {
+                const reviewText = generateReview(product);
                 
-                return templates[Math.floor(Math.random() * templates.length)];
-            };
-
-            // 商品検索実行
-            const searchProducts = async () => {
-                if (!selectedGenre) return;
-                
-                setLoading(true);
-                const genreName = genres.find(g => g.id === selectedGenre)?.name || '';
-                
-                // 実際の実装では楽天APIを呼び出し
-                setTimeout(() => {
-                    setProducts(generateSampleProducts(genreName));
-                    setLoading(false);
-                }, 1500);
-            };
-
-            // テキストコピー機能
-            const copyToClipboard = async (text, productId) => {
-                try {
-                    await navigator.clipboard.writeText(text);
-                    setCopiedId(productId);
-                    setTimeout(() => setCopiedId(null), 2000);
-                } catch (err) {
-                    console.error('コピーに失敗しました:', err);
-                }
-            };
-
-            return (
-                <div className="max-w-6xl mx-auto p-6 bg-gradient-to-br from-pink-50 to-purple-50 min-h-screen">
-                    <header className="text-center mb-8">
-                        <h1 className="text-3xl font-bold text-gray-800 mb-2">
-                            🛍️ 楽天ROOM投稿支援ツール
-                        </h1>
-                        <p className="text-gray-600">ジャンル指定で売れ筋商品をリサーチ＆投稿文を自動生成</p>
-                    </header>
-
-                    {/* URL解析機能 */}
-                    <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
-                        <h2 className="text-xl font-semibold mb-4 flex items-center">
-                            <Search className="mr-2" size={20} />
-                            楽天商品URL解析
-                        </h2>
-                        <p className="text-gray-600 mb-4 text-sm">
-                            楽天市場の商品URLを入力すると、基本情報を抽出して手動入力フォームに反映します。URLがない場合は「手動入力」ボタンから直接商品情報を入力できます。
-                        </p>
-                        
-                        <div className="flex gap-3 mb-4">
-                            <input
-                                type="text"
-                                value={urlInput}
-                                onChange={(e) => setUrlInput(e.target.value)}
-                                placeholder="https://item.rakuten.co.jp/shop/item-code/ または商品ページのURL"
-                                className="flex-1 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
-                            />
-                            <button
-                                onClick={analyzeUrl}
-                                disabled={!urlInput.trim()}
-                                className="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-6 py-3 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-lg transition-all"
-                            >
-                                解析
-                            </button>
-                            <button
-                                onClick={() => setShowManualForm(true)}
-                                className="bg-gradient-to-r from-orange-500 to-red-500 text-white px-6 py-3 rounded-lg hover:shadow-lg transition-all"
-                            >
-                                手動入力
-                            </button>
-                        </div>
-                        
-                        <div className="text-sm text-gray-500">
-                            💡 対応URL例：item.rakuten.co.jp、product.rakuten.co.jp など
-                        </div>
-                    </div>
-
-                    {/* 手動入力フォーム */}
-                    {showManualForm && (
-                        <div className="bg-white rounded-lg shadow-lg p-6 mb-6 border-l-4 border-green-400">
-                            <h2 className="text-xl font-semibold mb-4 flex items-center">
-                                ✏️ 商品詳細入力
-                            </h2>
-                            
-                            <div className="grid md:grid-cols-2 gap-6">
-                                <div className="space-y-4">
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                                            商品名 <span className="text-red-500">*</span>
-                                        </label>
-                                        <input
-                                            type="text"
-                                            value={manualProduct.name}
-                                            onChange={(e) => setManualProduct({...manualProduct, name: e.target.value})}
-                                            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500"
-                                            placeholder="商品名を入力"
-                                        />
-                                    </div>
-                                    
-                                    <div className="grid grid-cols-2 gap-3">
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">
-                                                価格 <span className="text-red-500">*</span>
-                                            </label>
-                                            <input
-                                                type="text"
-                                                value={manualProduct.price}
-                                                onChange={(e) => setManualProduct({...manualProduct, price: e.target.value})}
-                                                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500"
-                                                placeholder="2980"
-                                            />
-                                        </div>
-                                        
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">
-                                                評価
-                                            </label>
-                                            <input
-                                                type="number"
-                                                step="0.1"
-                                                min="1"
-                                                max="5"
-                                                value={manualProduct.rating}
-                                                onChange={(e) => setManualProduct({...manualProduct, rating: e.target.value})}
-                                                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500"
-                                                placeholder="4.5"
-                                            />
-                                        </div>
-                                    </div>
-                                    
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                                            レビュー件数
-                                        </label>
-                                        <input
-                                            type="number"
-                                            value={manualProduct.reviewCount}
-                                            onChange={(e) => setManualProduct({...manualProduct, reviewCount: e.target.value})}
-                                            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500"
-                                            placeholder="150"
-                                        />
-                                    </div>
-                                </div>
-                                
-                                <div className="space-y-4">
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                                            おすすめポイント（3つまで）
-                                        </label>
-                                        {manualProduct.features.map((feature, index) => (
-                                            <input
-                                                key={index}
-                                                type="text"
-                                                value={feature}
-                                                onChange={(e) => {
-                                                    const newFeatures = [...manualProduct.features];
-                                                    newFeatures[index] = e.target.value;
-                                                    setManualProduct({...manualProduct, features: newFeatures});
-                                                }}
-                                                className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 mb-2"
-                                                placeholder={`おすすめポイント ${index + 1}`}
-                                            />
-                                        ))}
-                                    </div>
-                                    
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                                            商品画像URL（任意）
-                                        </label>
-                                        <input
-                                            type="url"
-                                            value={manualProduct.imageUrl}
-                                            onChange={(e) => setManualProduct({...manualProduct, imageUrl: e.target.value})}
-                                            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500"
-                                            placeholder="https://..."
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div className="flex gap-3 mt-6">
-                                <button
-                                    onClick={addManualProduct}
-                                    className="bg-gradient-to-r from-green-500 to-blue-500 text-white px-6 py-3 rounded-lg hover:shadow-lg transition-all"
-                                >
-                                    商品を追加
-                                </button>
-                                <button
-                                    onClick={() => setShowManualForm(false)}
-                                    className="bg-gray-500 text-white px-6 py-3 rounded-lg hover:bg-gray-600 transition-all"
-                                >
-                                    キャンセル
-                                </button>
-                            </div>
-                        </div>
-                    )}
-
-                    {/* ジャンル選択 */}
-                    <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
-                        <h2 className="text-xl font-semibold mb-4 flex items-center">
-                            <Search className="mr-2" size={20} />
-                            ジャンル選択（サンプル商品検索）
-                        </h2>
-                        <div className="flex flex-wrap gap-3 mb-4">
-                            {genres.map(genre => (
-                                <button
-                                    key={genre.id}
-                                    onClick={() => setSelectedGenre(genre.id)}
-                                    className={`px-4 py-2 rounded-full transition-all ${
-                                        selectedGenre === genre.id
-                                            ? 'bg-pink-500 text-white shadow-lg'
-                                            : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
-                                    }`}
-                                >
-                                    {genre.name}
-                                </button>
-                            ))}
-                        </div>
-                        <button
-                            onClick={searchProducts}
-                            disabled={!selectedGenre || loading}
-                            className="bg-gradient-to-r from-pink-500 to-purple-600 text-white px-6 py-3 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 hover:shadow-lg transition-all"
-                        >
-                            {loading ? (
-                                <RefreshCw className="animate-spin" size={20} />
-                            ) : (
-                                <TrendingUp size={20} />
-                            )}
-                            {loading ? '検索中...' : '商品をリサーチ'}
-                        </button>
-                    </div>
-
-                    {/* 成功投稿者分析結果 */}
-                    {products.length > 0 && (
-                        <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
-                            <h2 className="text-xl font-semibold mb-4 flex items-center">
-                                📊 成功投稿者分析レポート
-                            </h2>
-                            
-                            <div className="grid md:grid-cols-2 gap-6">
-                                <div className="space-y-4">
-                                    <div>
-                                        <h3 className="font-semibold text-green-600 mb-2">🔥 効果的な投稿の特徴</h3>
-                                        <ul className="text-sm space-y-1 text-gray-700">
-                                            <li>• 冒頭にインパクトのある絵文字+フレーズ</li>
-                                            <li>• 感情表現を豊富に使用（💕😍✨など）</li>
-                                            <li>• 具体的な数値（価格・評価・件数）</li>
-                                            <li>• 緊急性・限定性を演出</li>
-                                            <li>• ジャンル特化のハッシュタグ使用</li>
-                                        </ul>
-                                    </div>
-                                    
-                                    <div>
-                                        <h3 className="font-semibold text-blue-600 mb-2">📈 エンゲージメント向上要素</h3>
-                                        <ul className="text-sm space-y-1 text-gray-700">
-                                            <li>• 「体験談」形式（実際使った感想）</li>
-                                            <li>• 読者への呼びかけ（質問・コメント促進）</li>
-                                            <li>• 他商品との比較ポイント</li>
-                                            <li>• 季節・イベントとの関連付け</li>
-                                        </ul>
-                                    </div>
-                                </div>
-                                
-                                <div className="space-y-4">
-                                    <div>
-                                        <h3 className="font-semibold text-purple-600 mb-2">💡 売上につながる投稿術</h3>
-                                        <ul className="text-sm space-y-1 text-gray-700">
-                                            <li>• 商品の「変化」を強調（before/after）</li>
-                                            <li>• 価格の妥当性を論理的に説明</li>
-                                            <li>• 購入タイミングの背景を共有</li>
-                                            <li>• フォロワーとの交流を重視</li>
-                                        </ul>
-                                    </div>
-                                    
-                                    <div className="bg-yellow-50 p-4 rounded-lg border-l-4 border-yellow-400">
-                                        <h4 className="font-semibold text-yellow-800 mb-2">⚡ 今回の投稿文に反映済み</h4>
-                                        <p className="text-sm text-yellow-700">
-                                            上記分析結果をもとに、売れている投稿者のスタイルを学習した4つのパターン（感情型・体験談型・緊急性型・比較解説型）で投稿文を自動生成しています。
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    )}
-
-                    {/* 検索結果 */}
-                    {products.length > 0 && (
-                        <div className="space-y-6">
-                            <h2 className="text-xl font-semibold text-gray-800">
-                                検索結果 ({products.length}件)
-                            </h2>
-                            
-                            {products.map(product => {
-                                const genreName = genres.find(g => g.id === selectedGenre)?.name || '';
-                                const reviewText = product.currentReview || generateReview(product, genreName);
-                                
-                                return (
-                                    <div key={product.id} className="bg-white rounded-lg shadow-lg overflow-hidden">
-                                        <div className="p-6">
-                                            <div className="flex flex-col lg:flex-row gap-6">
-                                                {/* 商品情報 */}
-                                                <div className="lg:w-1/2">
-                                                    <div className="flex gap-4 mb-4">
-                                                        <img
-                                                            src={product.imageUrl}
-                                                            alt={product.name}
-                                                            className="w-24 h-24 object-cover rounded-lg"
-                                                        />
-                                                        <div className="flex-1">
-                                                            <div className="flex items-center gap-2 mb-2">
-                                                                <h3 className="font-bold text-lg">{product.name}</h3>
-                                                                {product.isManual && (
-                                                                    <span className="bg-green-100 text-green-600 px-2 py-1 rounded text-xs">
-                                                                        手動追加
-                                                                    </span>
-                                                                )}
-                                                            </div>
-                                                            <div className="text-2xl font-bold text-pink-600 mb-2">
-                                                                ¥{product.price.toLocaleString()}
-                                                            </div>
-                                                            <div className="flex items-center gap-4 text-sm text-gray-600">
-                                                                <div className="flex items-center">
-                                                                    <Star className="text-yellow-400 mr-1" size={16} />
-                                                                    {product.rating} ({product.reviewCount}件)
-                                                                </div>
-                                                                {!product.isManual && (
-                                                                    <div className="bg-red-100 text-red-600 px-2 py-1 rounded">
-                                                                        売上ランキング{product.salesRank}位
-                                                                    </div>
-                                                                )}
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    
-                                                    <div className="mb-4">
-                                                        <h4 className="font-semibold mb-2">おすすめポイント</h4>
-                                                        <div className="space-y-1">
-                                                            {product.features.map((feature, index) => (
-                                                                <div key={index} className="flex items-center text-sm">
-                                                                    <div className="w-2 h-2 bg-pink-400 rounded-full mr-2"></div>
-                                                                    {feature}
-                                                                </div>
-                                                            ))}
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                {/* 投稿文プレビュー */}
-                                                <div className="lg:w-1/2">
-                                                    <div className="bg-gray-50 rounded-lg p-4">
-                                                        <div className="flex justify-between items-center mb-3">
-                                                            <h4 className="font-semibold">投稿文プレビュー</h4>
-                                                            <div className="text-sm text-gray-500">
-                                                                {reviewText.length}/400文字
-                                                            </div>
-                                                        </div>
-                                                        
-                                                        <div className="bg-white rounded p-3 mb-3 border-l-4 border-pink-400 whitespace-pre-line text-sm leading-relaxed max-h-64 overflow-y-auto">
-                                                            {reviewText}
-                                                        </div>
-                                                        
-                                                        <div className="space-y-2">
-                                                            <button
-                                                                onClick={() => copyToClipboard(reviewText, product.id)}
-                                                                className="w-full bg-gradient-to-r from-green-500 to-blue-500 text-white py-2 px-4 rounded-lg flex items-center justify-center gap-2 hover:shadow-lg transition-all"
-                                                            >
-                                                                {copiedId === product.id ? (
-                                                                    <>
-                                                                        <Check size={16} />
-                                                                        コピー完了！
-                                                                    </>
-                                                                ) : (
-                                                                    <>
-                                                                        <Copy size={16} />
-                                                                        投稿文をコピー
-                                                                    </>
-                                                                )}
-                                                            </button>
-                                                            
-                                                            <button
-                                                                onClick={() => {
-                                                                    const newReview = generateReview(product, genreName);
-                                                                    const updatedProducts = products.map(p => 
-                                                                        p.id === product.id ? { ...p, currentReview: newReview } : p
-                                                                    );
-                                                                    setProducts(updatedProducts);
-                                                                }}
-                                                                className="w-full bg-purple-500 text-white py-2 px-4 rounded-lg flex items-center justify-center gap-2 hover:bg-purple-600 transition-all"
-                                                            >
-                                                                <RefreshCw size={16} />
-                                                                別パターン生成
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                );
-                            })}
-                        </div>
-                    )}
-
-                    {/* 使い方説明 */}
-                    <div className="mt-8 bg-blue-50 rounded-lg p-6">
-                        <h3 className="font-semibold text-blue-800 mb-3">💡 使い方</h3>
-                        
-                        <div className="grid md:grid-cols-2 gap-6">
-                            <div>
-                                <h4 className="font-semibold text-blue-700 mb-2">🔗 URL解析モード</h4>
-                                <ol className="list-decimal list-inside space-y-1 text-blue-700 text-sm">
-                                    <li>楽天商品のURLをコピー</li>
-                                    <li>「楽天商品URL解析」に貼り付け</li>
-                                    <li>「解析」ボタンをクリック</li>
-                                    <li>抽出された情報を確認・編集</li>
-                                    <li>「商品を追加」で投稿文生成</li>
-                                </ol>
-                            </div>
-                            
-                            <div>
-                                <h4 className="font-semibold text-blue-700 mb-2">📊 ジャンル検索モード</h4>
-                                <ol className="list-decimal list-inside space-y-1 text-blue-700 text-sm">
-                                    <li>リサーチしたいジャンルを選択</li>
-                                    <li>「商品をリサーチ」ボタンをクリック</li>
-                                    <li>成功投稿者分析レポートを確認</li>
-                                    <li>表示された商品から選択</li>
-                                    <li>投稿文をコピーして楽天ROOMへ</li>
-                                </ol>
-                            </div>
-                        </div>
-                        
-                        <div className="mt-4 p-4 bg-green-50 rounded border-l-4 border-green-400">
-                            <h4 className="font-semibold text-green-800 mb-2">🔗 対応URL形式</h4>
-                            <ul className="text-sm text-green-700 space-y-1">
-                                <li>• <code>https://item.rakuten.co.jp/shop-name/item-code/</code></li>
-                                <li>• <code>https://product.rakuten.co.jp/product/product-id/</code></li>
-                                <li>• 楽天市場の商品ページURL全般</li>
-                            </ul>
+                const productElement = document.createElement('div');
+                productElement.className = 'product-item';
+                productElement.innerHTML = `
+                    <div class="product-info">
+                        <img src="${product.imageUrl}" alt="${product.name}" class="product-image" onerror="this.src='https://via.placeholder.com/150x150?text=No+Image'">
+                        <div class="product-details">
+                            <h3>${product.name.length > 50 ? product.name.substring(0, 50) + '...' : product.name}</h3>
+                            <div class="price">¥${product.price.toLocaleString()}</div>
+                            <div class="rating">⭐ ${product.reviewAverage} (${product.reviewCount}件) - ${product.shopName}</div>
                         </div>
                     </div>
                     
-                    <footer className="mt-12 text-center text-gray-500 text-sm">
-                        <p>© 2025 楽天ROOM投稿支援ツール - 楽天アフィリエイトAPI申請用</p>
-                        <p>利用規約を遵守した安全な商品情報管理ツールです</p>
-                    </footer>
-                </div>
-            );
-        };
+                    <div style="margin-bottom: 16px;">
+                        <h4 style="margin-bottom: 8px;">抽出された特徴</h4>
+                        ${product.features.map(feature => `
+                            <span style="background: #fce7f3; color: #be185d; padding: 4px 8px; border-radius: 12px; font-size: 12px; margin-right: 8px; margin-bottom: 4px; display: inline-block;">${feature}</span>
+                        `).join('')}
+                    </div>
+                    
+                    <div class="review-preview">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
+                            <h4>投稿文プレビュー</h4>
+                            <div class="text-small">${reviewText.length}/400文字</div>
+                        </div>
+                        
+                        <div class="review-text">${reviewText}</div>
+                        
+                        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                            <button class="button button-success" onclick="copyReview('${product.id}', \`${reviewText.replace(/`/g, '\\`').replace(/\$/g, '\\$')}\`)">
+                                📋 投稿文をコピー
+                            </button>
+                            <button class="button" style="background: #8b5cf6;" onclick="regenerateReview('${product.id}')">
+                                🔄 別パターン生成
+                            </button>
+                            <a href="${product.url}" target="_blank" class="button" style="background: #ef4444; text-decoration: none;">
+                                🔗 商品ページを開く
+                            </a>
+                        </div>
+                    </div>
+                `;
+                
+                productsList.appendChild(productElement);
+            });
+        }
 
-        ReactDOM.render(<RakutenRoomResearchTool />, document.getElementById('root'));
+        // 投稿文コピー
+        async function copyReview(productId, text) {
+            try {
+                await navigator.clipboard.writeText(text);
+                
+                const button = event.target;
+                const originalText = button.textContent;
+                button.textContent = '✅ コピー完了！';
+                button.style.background = '#10b981';
+                
+                setTimeout(() => {
+                    button.textContent = originalText;
+                    button.style.background = '';
+                }, 2000);
+            } catch (err) {
+                alert('コピーに失敗しました。テキストを手動でコピーしてください。');
+            }
+        }
+
+        // 投稿文再生成
+        function regenerateReview(productId) {
+            const product = products.find(p => p.id === productId);
+            if (!product) return;
+            
+            renderProducts();
+        }
+
+        // API使用回数更新
+        function updateUsageCount() {
+            usageCount++;
+            document.getElementById('usageCount').textContent = usageCount;
+            document.getElementById('remainingCount').textContent = 1000 - usageCount;
+            
+            // 警告表示
+            if (usageCount > 800) {
+                alert('API使用回数が800回を超えました。残り回数にご注意ください。');
+            }
+        }
+
+        // ページ読み込み時の初期化
+        window.addEventListener('load', function() {
+            // 保存されたAPIキーを復元
+            const savedApiKey = localStorage.getItem('rakuten_api_key');
+            if (savedApiKey) {
+                document.getElementById('appId').value = savedApiKey;
+            }
+        });
     </script>
 </body>
 </html>
